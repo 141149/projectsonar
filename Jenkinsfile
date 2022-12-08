@@ -1,37 +1,64 @@
-node {
-   def mvnHome
-  stage('Prepare') {
-      git url: 'https://github.com/141149/projectsonar.git', branch: 'main'
-      mvnHome = tool 'maven'
-   }
-  stage ('Code Quality') {
-      sh "'${mvnHome}/bin/mvn' -Dmaven.test.failure.ignore sonar:sonar"
-  }
-  stage ('Clean') {
-      sh "'${mvnHome}/bin/mvn' -Dmaven.test.failure.ignore clean"
-  }
-  stage ('Validate') {
-      sh "'${mvnHome}/bin/mvn' -Dmaven.test.failure.ignore validate"
-  }
-  stage ('Compile') {
-      sh "'${mvnHome}/bin/mvn' -Dmaven.test.failure.ignore compile"
-  }
-  stage ('Test') {
-      sh "'${mvnHome}/bin/mvn' -Dmaven.test.failure.ignore test"
-  }
-  stage ('Package') {
-      sh "'${mvnHome}/bin/mvn' -Dmaven.test.failure.ignore package"
-  }
-  stage ('Verify') {
-      sh "'${mvnHome}/bin/mvn' -Dmaven.test.failure.ignore verify"
-  }
-  stage ('Install') {
-      sh "'${mvnHome}/bin/mvn' -Dmaven.test.failure.ignore install"
-  }
-  stage ('Deliver & Deployment') {
-      sh 'curl -u admin:redhat@123 -T target/**.war "http://34.227.161.42:8080/manager/text/deploy?path=/karthik&update=true"'
-  }
-  stage ('SmokeTest') {
-      sh 'curl --retry-delay 10 --retry 5 "http://34.227.161.42:8080/karthik"'
-  }
+pipeline {
+    agent any 
+    tools {
+         maven 'maven'
+         jdk 'java'
+    }
+    stages {
+
+        stage('Stage-0 : Static Code Analysis Using SonarQube') { 
+            steps {
+                sh 'mvn clean verify sonar:sonar -DskipTests'
+            }
+        }
+
+        stage('Stage-1 : Clean') { 
+            steps {
+                sh 'mvn clean'
+            }
+        }
+         stage('Stage-2 : Validate') { 
+            steps {
+                sh 'mvn validate'
+            }
+        }
+         stage('Stage-3 : Compile') { 
+            steps {
+                sh 'mvn compile'
+            }
+        }
+         stage('Stage-4 : Test') { 
+            steps {
+                sh 'mvn test -DskipTests'
+            }
+        }
+          stage('Stage-5 : Install') { 
+            steps {
+                sh 'mvn install -DskipTests'
+            }
+        }
+          stage('Stage-6 : Verify') { 
+            steps {
+                sh 'mvn verify -DskipTests'
+            }
+        }
+          stage('Stage-7 : Package') { 
+            steps {
+                sh 'mvn package -DskipTests'
+            }
+        }
+          stage('Stage-9 : Deployment - Deploy a Artifact devops-3.0.0-SNAPSHOT.war file to Tomcat Server') { 
+            steps {
+                sh 'curl -u admin:redhat@123 -T target/**.war "http://3.95.28.205:8080/manager/text/deploy?path=/karthik&update=true"'
+            }
+        } 
+  
+          stage('Stage-10 : SmokeTest') { 
+            steps {
+                sh 'curl --retry-delay 10 --retry 5 "http://3.95.28.205:8080/karthik"'
+            }
+        }
+
+  
+    }
 }
