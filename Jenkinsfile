@@ -52,15 +52,15 @@ pipeline {
                 sh 'mvn deploy -DskipTests'
             }
         }
-          stage('Stage-9 : Deployment - Deploy a Artifact devops-3.0.0-SNAPSHOT.war file to Tomcat Server') { 
-            steps {
-                sh 'curl -u admin:redhat@123 -T target/**.war "http://3.92.49.203:8080/manager/text/deploy?path=/karthik&update=true"'
-            }
-        } 
-          stage('Stage-10 : SmokeTest') { 
-            steps {
-                sh 'curl --retry-delay 10 --retry 5 "http://3.92.49.203:8080/karthik"'
-            }
-        }
+//           stage('Stage-9 : Deployment - Deploy a Artifact devops-3.0.0-SNAPSHOT.war file to Tomcat Server') { 
+//             steps {
+//                 sh 'curl -u admin:redhat@123 -T target/**.war "http://3.92.49.203:8080/manager/text/deploy?path=/karthik&update=true"'
+//             }
+//         } 
+//           stage('Stage-10 : SmokeTest') { 
+//             steps {
+//                 sh 'curl --retry-delay 10 --retry 5 "http://3.92.49.203:8080/karthik"'
+//             }
+//         }
     }
 }
